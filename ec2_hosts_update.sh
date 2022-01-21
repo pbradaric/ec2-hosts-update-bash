@@ -216,7 +216,7 @@ fi
 ec2_instances_data=""
 if [ "${reset}" -eq 0 ]; then
     print_message "Checking if session has expired...\n"
-    ec2_instances_data=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[*].[PublicIpAddress, Tags[?Key==`Name`][Value]]' --output text --profile mfa)
+    ec2_instances_data=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[*].[PublicIpAddress, Tags[?Key==`Name`][Value]]' --output text --profile mfa 2>&1)
     #
     # Check if session has expired - if so, we need to update AWS session data
     # Handles "An error occurred (RequestExpired) when calling the DescribeInstances operation: Request has expired." response!
