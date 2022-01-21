@@ -213,6 +213,7 @@ if [ "${reconfigure}" -eq 1 ]; then
     print_message "You can reconfigure MFA ARN (and MFA secret key) in the future by supplying --reconfigure flag when executing this script.\n\n"
 fi
 
+session_expired=""
 ec2_instances_data=""
 if [ "${reset}" -eq 0 ]; then
     print_message "Checking if session has expired...\n"
