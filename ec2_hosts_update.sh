@@ -281,13 +281,6 @@ print_message "Getting relevant EC2 instances data from AWS...\n"
 if [ -z "${ec2_instances_data}" ]; then
     ec2_instances_data=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[*].[PublicIpAddress, Tags[?Key==`Name`][Value]]' --output text --profile mfa)
 fi
-if [ ! -z "${session_expired}" ]; then
-    #
-    # Session has expired, we need to update AWS session data
-    # Handle "An error occurred (RequestExpired) when calling the DescribeInstances operation: Request has expired." response!
-    #
-    update_aws_session_data
-fi
 ec2_instances_data=$(sed -r -z 's/([0-9\.]+)\n/\1 /g' /dev/stdin <<< "${ec2_instances_data}" )
 ec2_instances_names_list=$(sed -r -z 's/[0-9\.]+ ([^ ]+)\n/\1|/g' /dev/stdin <<< "${ec2_instances_data}" | sed -r 's/\|[ ]*$//g')
 ec2_instances_data=$(cat /dev/stdin <<< "${ec2_instances_data}" | sort -k1 | sort -k2 | awk "${AWK_ADD_NUMBERS}")
