@@ -220,9 +220,11 @@ if [ "${reset}" -eq 0 ]; then
     ec2_instances_data=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[*].[PublicIpAddress, Tags[?Key==`Name`][Value]]' --output text --profile mfa 2>&1)
     #
     # Check if session has expired - if so, we need to update AWS session data
-    # Handles "An error occurred (RequestExpired) when calling the DescribeInstances operation: Request has expired." response!
+    # Handles following responses:
+    #   - "An error occurred (AuthFailure) when calling the DescribeInstances operation: AWS was not able to validate the provided access credentials"
+    #   - "An error occurred (RequestExpired) when calling the DescribeInstances operation: Request has expired."
     #
-    session_expired=$(grep -Eio 'RequestExpired' /dev/stdin <<< "${ec2_instances_data}" )
+    session_expired=$(grep -Eio '(AuthFailure|RequestExpired)' /dev/stdin <<< "${ec2_instances_data}" )
 fi
 
 if [ "${reset}" -eq 1 ] || [ ! -z "${session_expired}" ]; then
