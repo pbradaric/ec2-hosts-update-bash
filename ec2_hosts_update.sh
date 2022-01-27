@@ -305,12 +305,13 @@ sudo sed -r -i "/(${ec2_instances_names_list})/d" $HOSTS_FILE_PATH
 cat /dev/stdin <<< "${ec2_instances_data}" | sudo tee -a $HOSTS_FILE_PATH > /dev/null
 
 #
-# Remove hashed hosts keys
+# Remove hashed hosts keys and update 'known_hosts' file with new ones
 #
-print_message "Removing hashed hosts SSH keys...\n"
+print_message "Removing hashed hosts SSH keys from 'known_hosts' file and updating with new...\n"
 while IFS= read -r line ; do
     host_name=$(sed -r "s/^[0-9\. ]+//g" /dev/stdin <<< "${line}")
     ssh-keygen -q -f "${KNOWN_HOSTS_FILE_PATH}" -R "${host_name}" > /dev/null 2>&1
+    ssh-keyscan -H -t ecdsa "${host_name}" >> "${KNOWN_HOSTS_FILE_PATH}"
 done <<< "${ec2_instances_data}"
 
 print_success "All done and ready!"
