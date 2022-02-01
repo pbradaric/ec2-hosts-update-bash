@@ -33,6 +33,7 @@
 AWS_CLI_CREDENTIALS_PATH=~/.aws/credentials
 HOSTS_FILE_PATH=/etc/hosts
 KNOWN_HOSTS_FILE_PATH=~/.ssh/known_hosts
+WINDOWS_HOSTS_FILE_PATH=/mnt/c/Windows/System32/drivers/etc/hosts
 
 #
 # Helper variables
@@ -291,7 +292,11 @@ ec2_instances_data=$(cat /dev/stdin <<< "${ec2_instances_data}" | sort -k1 | sor
 #
 # Update hosts file with new EC2 instances IPs
 #
-print_message "Updating ${HOSTS_FILE_PATH} with following new EC2 instances records:\n"
+if [ -w "${WINDOWS_HOSTS_FILE_PATH}" ]; then
+    print_message "Updating ${HOSTS_FILE_PATH} AND ${WINDOWS_HOSTS_FILE_PATH} with following new EC2 instances records:\n"
+else
+    print_message "Updating ${HOSTS_FILE_PATH} with following new EC2 instances records:\n"
+fi
 print_text "${ec2_instances_data}\n"
 print_message "Do you want to continue (type y to continue): "
 read to_continue
@@ -303,6 +308,15 @@ fi
 print_message "Updating ${HOSTS_FILE_PATH}\n"
 sudo sed -r -i "/(${ec2_instances_names_list})/d" $HOSTS_FILE_PATH
 cat /dev/stdin <<< "${ec2_instances_data}" | sudo tee -a $HOSTS_FILE_PATH > /dev/null
+
+if [ -w "${WINDOWS_HOSTS_FILE_PATH}" ]; then
+    #
+    # Update Windows hosts file with new EC2 instances IPs
+    #
+    print_message "Updating ${WINDOWS_HOSTS_FILE_PATH}\n"
+    sudo sed -r -i "/(${ec2_instances_names_list})/d" $WINDOWS_HOSTS_FILE_PATH
+    cat /dev/stdin <<< "${ec2_instances_data}" | sudo tee -a $WINDOWS_HOSTS_FILE_PATH > /dev/null
+fi
 
 #
 # Remove hashed hosts keys and update 'known_hosts' file with new ones
