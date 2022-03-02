@@ -24,7 +24,7 @@ This script also requires user to setup new AWS CLI profile named **mfa** (https
 
 - Install AWS CLI v2. Follow this guide https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html.
 - Create new named profile **mfa**. Follow this guide https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html.
-- Clone this repo and copy `ec2_hosts_update.sh` to a directory that is included in the PATH (so it can be invoked from anywhere).
+- Clone this repo and copy `ec2-hosts-update.sh` to a directory that is included in the PATH (so it can be invoked from anywhere).
 
 
 
